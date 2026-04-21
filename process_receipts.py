@@ -138,3 +138,40 @@ def run_parallel(all_paths: List[Path], n_workers: int = None) -> pd.DataFrame:
     print("Concatenating all partial DataFrames...")
     final_df = pd.concat(partial_dfs, ignore_index=True)
     return final_df
+
+def aggregate_results(df: pd.DataFrame) -> dict:
+    """
+    Produces the summary statistics for the dashboard.
+    All operations are vectorised pandas groupby operations.
+    """
+    summary = {
+        # Total revenue: scalar, no loop
+        "total_revenue_myr": df["final_total_myr"].sum(),
+
+        # Tax by region: groupby produces a new Series — fully vectorised
+        "tax_by_region": (
+            df.groupby("region_code")["tax_amount_myr"]
+            .sum()
+            .reset_index()
+            .rename(columns={"tax_amount_myr": "total_tax_myr"})
+        ),
+
+        # Revenue by month: for time-series chart
+        "revenue_by_month": (
+            df.groupby("month")["final_total_myr"]
+            .sum()
+            .reset_index()
+            .sort_values("month")
+        ),
+
+        # Revenue by customer tier
+        "revenue_by_tier": (
+            df.groupby("customer_tier")["final_total_myr"]
+            .agg(["sum", "mean", "count"])
+            .reset_index()
+        ),
+
+        # Full detail DataFrame for dashboard drill-down
+        "detail_df": df,
+    }
+    return summary
