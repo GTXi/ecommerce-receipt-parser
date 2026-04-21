@@ -55,7 +55,7 @@ def save_results(summary: dict, output_dir: Path):
     result = subprocess.run(cmd, check=True)
     print("Transfer complete.") """
 
-    def ship_to_proxmox(local_dir: Path, remote_user: str, remote_host: str, remote_path: str):
+def ship_to_proxmox(local_dir: Path, remote_user: str, remote_host: str, remote_path: str):
         """
         Uses rsync to ship the output to Proxmox.
         Note: Windows doesn't have rsync natively, so we are bypassing the actual
