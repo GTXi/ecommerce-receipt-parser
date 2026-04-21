@@ -105,3 +105,36 @@ def process_chunk(file_paths: List[Path]) -> pd.DataFrame:
 
     return df[["receipt_id", "region_code", "currency", "customer_tier",
                "raw_subtotal", "tax_amount_myr", "final_total_myr", "month"]]
+
+def run_parallel(all_paths: List[Path], n_workers: int = None) -> pd.DataFrame:
+    """
+    Orchestrates the parallel processing phase.
+    Returns fully aggregated DataFrame with no race conditions.
+    """
+    if n_workers is None:
+        # Leave 1 core for the OS + main process
+        n_workers = max(1, mp.cpu_count() - 1)
+
+    # ── CHUNKING: divide paths into n_workers equal chunks ────────────────────
+    # Reason: one chunk per worker = one IPC round-trip per worker = minimal overhead.
+    # np.array_split handles uneven divisions cleanly (last chunk may be slightly smaller).
+    chunks = np.array_split(all_paths, n_workers)
+    chunks = [list(chunk) for chunk in chunks if len(chunk) > 0]
+
+    partial_dfs = []
+
+    # The Pool context manager ensures workers are terminated even on exceptions
+    with mp.Pool(processes=n_workers) as pool:
+        # imap_unordered: yields DataFrames as workers complete (out of order is fine)
+        for partial_df in pool.imap_unordered(process_chunk, chunks):
+            if not partial_df.empty:
+                partial_dfs.append(partial_df)
+                print(f"  Chunk done. Collected {len(partial_dfs)}/{len(chunks)} chunks...")
+
+    # ── AGGREGATION: single pd.concat — no race conditions ────────────────────
+    # Reason: all workers have RETURNED their DataFrames before this line runs.
+    # The Pool is already closed. There is no shared mutable state, therefore
+    # there are zero race conditions by design (explained in detail in Phase 3).
+    print("Concatenating all partial DataFrames...")
+    final_df = pd.concat(partial_dfs, ignore_index=True)
+    return final_df
