@@ -175,6 +175,18 @@ if __name__ == "__main__":
     _, sync_proc_time = run_sync_processing(sync_sample)
     print(f"  ✓ SYNC processing:      {sync_proc_time:.3f}s")
 
+    # ── [4b/6] THREADED PROCESSING (GIL demonstration) ────────────────────────────
+    from process_receipts import run_threaded_processing
+
+    print(f"\n[4b/6] Threaded processing ({config.SYNC_PROC_N:,} receipts, 8 workers)...")
+    print(f"  Note: Expected to show minimal speedup — GIL limits CPU-bound threading")
+    threaded_sample = list(all_paths[:config.SYNC_PROC_N])
+    _, threaded_proc_time = run_threaded_processing(threaded_sample, max_workers=8)
+    # Extrapolate to 100k for fair comparison
+    threaded_proc_extrap = (threaded_proc_time / config.SYNC_PROC_N) * config.N_RECEIPTS
+    print(f"  ✓ THREADED processing:  {threaded_proc_time:.3f}s  "
+          f"(extrap: {threaded_proc_extrap:.1f}s)")
+
     # ── [5/6] PARALLEL PROCESSING ─────────────────────────────────────────────
     n_workers = max(1, mp.cpu_count() - 1)
     print(f"\n[5/6] Parallel processing ({config.N_RECEIPTS:,} receipts, "
@@ -197,11 +209,12 @@ if __name__ == "__main__":
     print("  " + "-" * 60)
 
     rows = [
-        ("I/O — file writes",  "Sync (baseline)", sync_write_time,  1.0),
-        ("I/O — file writes",  "Threading",       thread_write_time, sync_write_time / thread_write_time),
-        ("I/O — file writes",  "Asyncio",         async_write_norm,  sync_write_time / async_write_norm),
-        ("CPU — tax math",     "Sync (baseline)", sync_proc_extrap,  1.0),
-        ("CPU — tax math",     "Multiprocessing", parallel_proc_time, sync_proc_extrap / parallel_proc_time),
+        ("I/O — file writes", "Sync (baseline)", sync_write_time, 1.0),
+        ("I/O — file writes", "Threading", thread_write_time, sync_write_time / thread_write_time),
+        ("I/O — file writes", "Asyncio", async_write_norm, sync_write_time / async_write_norm),
+        ("CPU — tax math", "Sync (baseline)", sync_proc_extrap, 1.0),
+        ("CPU — tax math", "Threading (GIL!)", threaded_proc_extrap, sync_proc_extrap / threaded_proc_extrap),
+        ("CPU — tax math", "Multiprocessing", parallel_proc_time, sync_proc_extrap / parallel_proc_time),
     ]
     for phase, method, secs, speedup in rows:
         marker = "◀ baseline" if speedup == 1.0 else f"{speedup:.1f}x faster"

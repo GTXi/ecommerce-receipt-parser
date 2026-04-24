@@ -175,3 +175,42 @@ def aggregate_results(df: pd.DataFrame) -> dict:
         "detail_df": df,
     }
     return summary
+
+
+def run_threaded_processing(all_paths: list, max_workers: int = 8) -> tuple[pd.DataFrame, float]:
+    """
+    Attempts to use threading for CPU-bound tax calculations.
+
+    EXPECTED RESULT: Similar to or slower than sync.
+    REASON: Python's GIL (Global Interpreter Lock) prevents two threads from
+    executing Python bytecode simultaneously. For CPU-bound work like pandas
+    math operations, threads take turns — no true parallelism occurs.
+    This is the exact problem multiprocessing solves by using separate processes,
+    each with their own GIL.
+
+    This function exists specifically to DEMONSTRATE the GIL limitation.
+    """
+    from concurrent.futures import ThreadPoolExecutor
+    import math
+
+    # Split paths into chunks, one per thread
+    chunk_size = math.ceil(len(all_paths) / max_workers)
+    chunks = [
+        all_paths[i: i + chunk_size]
+        for i in range(0, len(all_paths), chunk_size)
+    ]
+
+    partial_dfs = []
+    t = time.perf_counter()
+
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        # process_chunk is CPU-bound — threads will queue at the GIL
+        futures = [executor.submit(process_chunk, chunk) for chunk in chunks]
+        for future in futures:
+            df = future.result()
+            if not df.empty:
+                partial_dfs.append(df)
+
+    elapsed = time.perf_counter() - t
+    final_df = pd.concat(partial_dfs, ignore_index=True) if partial_dfs else pd.DataFrame()
+    return final_df, elapsed
