@@ -7,10 +7,10 @@ Edit ONLY this file to change scale or output paths.
 No Proxmox or remote server required — all results save locally.
 
 SCALING GUIDE:
-  Quick test  : BENCH_N=1_000,  N_RECEIPTS=5_000
-  Assignment  : BENCH_N=10_000, N_RECEIPTS=100_000   ← default
-  Stress test : BENCH_N=10_000, N_RECEIPTS=500_000   (needs ~4GB free disk)
-  Shahadan test : BENCH_N=10_000, N_RECEIPTS=1_000_000 SYNC_PROC_N=10_000
+  Quick test    : BENCH_N=1_000,  N_RECEIPTS=5_000
+  Assignment    : BENCH_N=10_000, N_RECEIPTS=100_000, SYNC_PROC_N=10_000 ← default
+  Stress test   : BENCH_N=10_000, N_RECEIPTS=500_000, SYNC_PROC_N=10_000 (needs ~4GB free disk)
+  Shahadan test : BENCH_N=10_000, N_RECEIPTS=1_000_000, SYNC_PROC_N=10_000
 """
 
 # ── SCALE ──────────────────────────────────────────────────────────────────────
