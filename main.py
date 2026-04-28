@@ -169,9 +169,9 @@ if __name__ == "__main__":
     print("=" * 64)
     print("  E-COMMERCE RECEIPT PARSER — CONCURRENCY BENCHMARK")
     print("=" * 64)
-    print(f"  Scale      : {config.BENCH_N:,} receipts  (I/O benchmark)")
-    print(f"               {config.N_RECEIPTS:,} receipts  (full async + parallel run)")
-    print(f"  CPU cores  : {mp.cpu_count()} logical  ({n_workers} used for parallel)")
+    print(f"  Scale        : {config.BENCH_N:>10,} receipts  (I/O benchmark)")
+    print(f"                 {config.N_RECEIPTS:>10,} receipts  (full async + parallel run)")
+    print(f"  CPU cores    : {mp.cpu_count()} logical  ({n_workers} used for parallel)")
     print(f"  Baseline RAM : {_get_memory_mb():.0f} MB")
     print("=" * 64)
 
@@ -268,10 +268,13 @@ if __name__ == "__main__":
         print(f"  {phase:<26} {method:<20} {secs:>7.2f}s  {marker}")
 
     print("  " + "-" * 62)
-    print(f"  Total Revenue (MYR):  {summary['total_revenue_myr']:>15,.2f}")
-    print(f"  Total Tax (MYR):      {summary['total_tax_myr']:>15,.2f}")
-    print(f"  Receipts processed:   {summary['total_receipts']:>15,}")
-    print(f"  CPU cores used:       {n_workers:>15} / {mp.cpu_count()}")
+    # NEW — fixed label width + fixed number column width
+    W = 22  # label column width
+    N = 20  # number column width
+    print(f"  {'Total Revenue (MYR):':<{W}} {summary['total_revenue_myr']:>{N},.2f}")
+    print(f"  {'Total Tax (MYR):':<{W}} {summary['total_tax_myr']:>{N},.2f}")
+    print(f"  {'Receipts processed:':<{W}} {summary['total_receipts']:>{N},}")
+    print(f"  {'CPU cores used:':<{W}} {f'{n_workers} / {mp.cpu_count()}':>{N}}")
     print("=" * 64)
 
     # ── SAVE TIMINGS TO SUMMARY ───────────────────────────────────────────────
@@ -291,6 +294,7 @@ if __name__ == "__main__":
     save_text_report(rows, summary, RESULTS_DIR, n_workers)
 
     if config.SAVE_CHARTS:
+        print()
         print(f"  Generating charts...")
         save_charts(summary, RESULTS_DIR, dpi=config.CHART_DPI)
 
