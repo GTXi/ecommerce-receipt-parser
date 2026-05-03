@@ -1,25 +1,6 @@
 # main.py
 """
 main.py
-───────
-Orchestrator for the E-Commerce Receipt Parser & Tax Calculator.
-
-Benchmarks three Python programming paradigms on 100,000 receipts:
-  - Synchronous     : sequential baseline, single OS thread
-  - Concurrent      : threading (ThreadPoolExecutor) + asyncio + aiofiles
-  - Parallel        : multiprocessing.Pool with pandas vectorisation
-
-Results are saved automatically to pipeline_output/:
-  - Parquet files (compressed data tables)
-  - PNG charts    (benchmark + tax + revenue visualisations)
-  - benchmark_report.txt (plain-text summary)
-
-No remote server, Streamlit, or browser required.
-
-To configure scale: edit config.py
-Author     : <your name>
-Student ID : <your ID>
-Subject    : Parallel Programming
 """
 
 import time
@@ -44,8 +25,7 @@ import config
 def _get_memory_mb() -> float:
     """
     Returns current process Resident Set Size in MB.
-    RSS = physical RAM pages actively held by this process.
-    Used to measure the memory cost of each processing paradigm —
+    Used to measure the memory cost of each processing paradigm
     multiprocessing is faster but uses more RAM (each worker copies memory).
     """
     try:
@@ -59,7 +39,6 @@ def _get_memory_mb() -> float:
 def _prepare_receipts(n: int) -> list:
     """
     Pre-generates receipt dicts in memory before timing any writes.
-    Faker (used inside generate_receipt) is CPU-bound — generating fake
     names/timestamps/SKUs takes real CPU time. By separating this step,
     the I/O benchmark only measures disk throughput, giving threading and
     asyncio a fair comparison against sync.
@@ -71,7 +50,7 @@ def _prepare_receipts(n: int) -> list:
 def _write_receipt_from_dict(args: tuple) -> None:
     """
     Writes one pre-generated receipt dict to disk.
-    Shared by sync, threaded, and async write paths — same operation,
+    Shared by sync, threaded, and async write paths with same operation,
     different concurrency model wrapping it.
     """
     receipt, base_path = args

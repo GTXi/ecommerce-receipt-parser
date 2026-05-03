@@ -1,10 +1,9 @@
 # config.py
 """
 config.py
-─────────
+
 Central configuration for the E-Commerce Receipt Parser pipeline.
 Edit ONLY this file to change scale or output paths.
-No Proxmox or remote server required — all results save locally.
 
 SCALING GUIDE:
   Quick test    : BENCH_N=1_000,  N_RECEIPTS=5_000
@@ -28,7 +27,6 @@ OUTPUT_DIR  = "receipts_data"    # Where generated JSON receipt files are stored
 RESULTS_DIR = "pipeline_output"  # Where Parquet + PNG chart files are saved
 
 # ── CHART OUTPUT ───────────────────────────────────────────────────────────────
-# Charts are saved as PNG files inside RESULTS_DIR automatically after each run.
 # No Streamlit or browser required to view results.
 SAVE_CHARTS = True             # Set False to skip chart generation
 CHART_DPI   = 150              # PNG resolution (150 = good screen quality)gen
