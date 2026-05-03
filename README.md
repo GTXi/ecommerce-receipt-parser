@@ -6,7 +6,7 @@
 
 > Lecturer: SHAHADAN BIN SAAD | CourseCode: ITT440 Network Programming
 
-### [Demo Video]([https://youtu.be/dQw4w9WgXcQ?si=H69IZPbH5ZxcsS4r](https://youtu.be/3GOp7A1b1kA))
+### [Demo Video](https://youtu.be/3GOp7A1b1kA)
 
 ## Project Overview
 A Python pipeline that will generate 100,000 dummy e-commerce receipts across 7 Southeast Asian regions and will benchmark 3 programming paradigms against each other on the same workload
