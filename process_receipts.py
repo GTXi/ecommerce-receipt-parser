@@ -1,7 +1,5 @@
 # process_receipts.py
 """
-process_receipts.py
-───────────────────
 Phase 2 of the Receipt Parser pipeline.
 
 Demonstrates three approaches to CPU-bound processing:

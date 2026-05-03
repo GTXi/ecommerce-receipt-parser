@@ -1,7 +1,5 @@
 # serialize_and_ship.py
 """
-serialize_and_ship.py
-─────────────────────
 Saves all pipeline results locally as Parquet files and auto-generates
 PNG charts so anyone running the project can see results immediately
 without needing Streamlit, a browser, or any remote server.

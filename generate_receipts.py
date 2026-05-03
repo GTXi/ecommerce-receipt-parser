@@ -1,7 +1,5 @@
 # generate_receipts.py
 """
-generate_receipts.py
-────────────────────
 Phase 1 of the Receipt Parser pipeline.
 
 Demonstrates CONCURRENT I/O using asyncio + aiofiles to generate and write

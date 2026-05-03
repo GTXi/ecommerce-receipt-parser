@@ -1,7 +1,5 @@
 # config.py
 """
-config.py
-
 Central configuration for the E-Commerce Receipt Parser pipeline.
 Edit ONLY this file to change scale or output paths.
 

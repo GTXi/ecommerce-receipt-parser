@@ -1,7 +1,4 @@
 # main.py
-"""
-main.py
-"""
 
 import time
 import asyncio
